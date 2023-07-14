@@ -1,0 +1,16 @@
+﻿@page "/employee/view/{employeeId:int}"
+@using employee_crud_ops.Shared.Models
+@inject HttpClient Http
+
+<EmployeeInfo EmployeeId="employeeId" HeaderText="Employee View" Employee="employee" ReadOnlyMode=true></EmployeeInfo>
+
+
+@code {
+    [Parameter] public int employeeId { get; set; }
+
+    private Employee employee = new Employee();
+
+    protected override async Task OnInitializedAsync() => employee = await Http.GetFromJsonAsync<Employee>($"/api/employee/getemployee/{employeeId}");
+
+
+}

@@ -1,0 +1,51 @@
+﻿@page "/employee/create"
+@page "/employee/edit/{employeeId:int}"
+
+@using employee_crud_ops.Shared.Models
+@inject HttpClient Http
+@inject NavigationManager navigationManager
+
+@if (employeeId > 0)
+{
+    <EmployeeInfo EmployeeId="employeeId" HeaderText="Update Employee Details" Employee="employee" OnValidSubmit="UpdateEmployee"></EmployeeInfo>
+}
+else
+{
+    <EmployeeInfo EmployeeId="0" HeaderText="Add Employee Details" Employee="employee" OnValidSubmit="CreateEmployee"></EmployeeInfo>
+}
+
+
+
+@code {
+    private Employee employee = new Employee();
+
+    [Parameter] public int employeeId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (employeeId > 0)
+            employee = await Http.GetFromJsonAsync<Employee>($"/api/employee/getemployee/{employeeId}");
+    }
+
+    private async Task CreateEmployee()
+    {
+        Console.WriteLine(employee.Code);
+
+        var result = await Http.PostAsJsonAsync("/api/employee/saveemployee", employee);
+        if (result != null && result.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            navigationManager.NavigateTo("employee/index");
+        }
+    }
+
+    private async Task UpdateEmployee()
+    {
+        Console.WriteLine(employee.Code);
+
+        var result = await Http.PostAsJsonAsync("/api/employee/updateemployee", employee);
+        if (result != null && result.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            navigationManager.NavigateTo("employee/index");
+        }
+    }
+}

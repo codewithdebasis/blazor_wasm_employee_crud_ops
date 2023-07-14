@@ -1,0 +1,99 @@
+﻿@page "/employee/index"
+@using employee_crud_ops.Shared.Models
+@inject HttpClient Http
+@inject IJSRuntime JsRuntime
+
+
+<h3>Employee List</h3>
+
+<h4 style="color:blue;">
+    Wants to Add New Employee? Click on <a href="/employee/create">Add Employee</a>
+</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Code</th>
+            <th>Full Name</th>
+            <th>Date of Birth</th>
+            <th>State</th>
+            <th>City</th>
+            <th>Joining Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (employees == null)
+        {
+            <tr>
+                <td colspan="8" align="center">No Data Found</td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var employee in employees)
+            {
+                <tr>
+                    <td width="10%">@employee.Code</td>
+                    <td width="25%"><a href="@GetEmployeeViewUrl(@employee)">@employee.FullName</a></td>
+                    <td width="10%">@employee.DOB.ToShortDateString()</td>
+                    <td width="15%">@employee.State</td>
+                    <td width="15%">@employee.City</td>
+                    <td width="10%">@employee.JoiningDate.ToShortDateString()</td>
+                    <td width="7%">
+                        <a href="@GetEditEmployeeViewUrl(@employee)" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                                <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"></path>
+                            </svg> Edit
+                        </a>
+                    </td>
+                    <td width="8%">
+                        <a class="btn btn-danger" tabindex="-1" role="button" aria-disabled="true" @onclick="_ => DeleteEmployee(employee)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                                <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"></path>
+                            </svg> Delete
+                        </a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@code {
+    private Employee[]? employees;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await this.FetEmployees();
+    }
+
+    private string GetEmployeeViewUrl(Employee employee)
+    {
+        return $"employee/view/{employee.Id}";
+    }
+
+    private string GetEditEmployeeViewUrl(Employee employee)
+    {
+        return $"employee/edit/{employee.Id}";
+    }
+
+    private async Task DeleteEmployee(Employee employee)
+    {
+        bool confirmed = await JsRuntime.InvokeAsync<bool>("confirm", $"Are you sure to Delete the Employee Record : {employee.Code}?"); // Confirm
+
+        if (confirmed)
+        {
+            var result = await Http.DeleteAsync($"/api/employee/deleteemployee/{employee.Id}");
+            if (result != null && result.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                await this.FetEmployees();
+            }
+        }
+
+
+    }
+
+    private async Task FetEmployees()
+    {
+        employees = await Http.GetFromJsonAsync<Employee[]>("/api/employee/getemployees");
+    }
+}
