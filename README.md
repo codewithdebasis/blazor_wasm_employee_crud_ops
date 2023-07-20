@@ -1,6 +1,6 @@
-# blazor_wasm_employee_crud_ops
+# CRUD Operation using Blazor WebAssembly and EF Core 7
 
-This repo is used to demonstrate the CRUD based operation by using Blazor Web-Assembly.
+This repo is used to demonstrate the CRUD-based operation by using Blazor Web Assembly.
 
 ## Prequisites 
 
