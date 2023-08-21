@@ -12,8 +12,8 @@
 <table class="table">
     <thead>
         <tr>
-            <th>Code</th>
             <th>Full Name</th>
+            <th>Code</th>
             <th>Date of Birth</th>
             <th>State</th>
             <th>City</th>
@@ -32,8 +32,11 @@
             @foreach (var employee in employees)
             {
                 <tr>
+                    <td width="25%">
+                        <img src="@employee.thumbnail" alt="" width="32" height="32" class="rounded-circle me-2">
+                        <a href="@GetEmployeeViewUrl(@employee)">@employee.FullName</a>
+                    </td>
                     <td width="10%">@employee.Code</td>
-                    <td width="25%"><a href="@GetEmployeeViewUrl(@employee)">@employee.FullName</a></td>
                     <td width="10%">@employee.DOB.ToShortDateString()</td>
                     <td width="15%">@employee.State</td>
                     <td width="15%">@employee.City</td>
@@ -88,6 +91,8 @@
                 await this.FetEmployees();
             }
         }
+
+
     }
 
     private async Task FetEmployees()

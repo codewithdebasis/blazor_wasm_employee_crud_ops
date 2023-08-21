@@ -29,8 +29,6 @@ else
 
     private async Task CreateEmployee()
     {
-        Console.WriteLine(employee.Code);
-
         var result = await Http.PostAsJsonAsync("/api/employee/saveemployee", employee);
         if (result != null && result.StatusCode == System.Net.HttpStatusCode.OK)
         {
@@ -40,8 +38,6 @@ else
 
     private async Task UpdateEmployee()
     {
-        Console.WriteLine(employee.Code);
-
         var result = await Http.PostAsJsonAsync("/api/employee/updateemployee", employee);
         if (result != null && result.StatusCode == System.Net.HttpStatusCode.OK)
         {

@@ -1,4 +1,6 @@
-﻿@using employee_crud_ops.Shared.Models
+﻿@using Microsoft.AspNetCore.Http;
+@using System.Net.Http.Headers;
+@using employee_crud_ops.Shared.Models
 
 <h3>@HeaderText</h3>
 <hr />
@@ -95,12 +97,22 @@
             </div>
         </div>
 
+        <div class="row mb-3">
+            <label for="inputPhone" class="col-sm-2 col-form-label">Profile Image</label>
+            <div class="col-sm-10">
+                <InputFile class="form-control" id="empphone" hidden=@ReadOnlyMode OnChange="@OnInputFileChange" />
+                <div>
+                    <img src="@Employee.thumbnail" height="200px" width="200px">
+                </div>
+            </div>
+        </div>
+
         <a class="btn btn-danger" tabindex="-1" role="button" aria-disabled="true" href="employee/index">Back To Employee List</a>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
         @if (ReadOnlyMode == false)
         {
-            <button type="submit" class="btn btn-primary">@(EmployeeId >0 ? "Update" : "Save")</button>
+            <button type="submit" class="btn btn-primary">@(EmployeeId > 0 ? "Update" : "Save")</button>
         }
     </EditForm>
 </div>
@@ -113,11 +125,24 @@
 
     [Parameter] public EventCallback OnValidSubmit { get; set; }
 
+    string imgUrl = string.Empty;
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
 
         Console.WriteLine(ReadOnlyMode);
+    }
+
+    private async Task OnInputFileChange(InputFileChangeEventArgs e)
+    {
+        IBrowserFile imgFile = e.File;
+        var buffers = new byte[imgFile.Size];
+        await imgFile.OpenReadStream().ReadAsync(buffers);
+        string imageType = imgFile.ContentType;
+        string fileName = imgFile.Name;
+        Employee.thumbnail = $"data:{imageType};base64,{Convert.ToBase64String(buffers)}";
+        Employee.ImageType = imageType;
     }
 
 }

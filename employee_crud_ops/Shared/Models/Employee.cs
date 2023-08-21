@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace employee_crud_ops.Shared.Models
 {
@@ -39,5 +41,14 @@ namespace employee_crud_ops.Shared.Models
         [Required]
         [DataType(DataType.Date)]
         public DateTime JoiningDate { get; set; }
+
+        [NotMapped]
+        public int? EmployeeProfilePicId { get;set; }
+
+        [NotMapped]
+        public string? thumbnail { get; set; }
+
+        [NotMapped]
+        public string? ImageType { get; set; }
     }
 }
